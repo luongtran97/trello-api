@@ -1,27 +1,47 @@
+/* eslint-disable no-console */
 import express from 'express'
-import { mapOrder } from '~/utils/sorts.js'
+import exitHook from 'async-exit-hook'
+import { CONNECT_BD, GET_DB, CLOSE_DB } from '~/config/mongodb'
+import 'dotenv/config'
+import { env } from '~/config/environment'
 
-const app = express()
+const START_SERVER = () => {
 
-const hostname = 'localhost'
-const port = 8080
+  const app = express()
 
-app.get('/', (req, res) => {
-  // Test Absolute import mapOrder
-  // eslint-disable-next-line no-console
-  console.log(mapOrder(
-    [{ id: 'id-1', name: 'One' },
-      { id: 'id-2', name: 'Two' },
-      { id: 'id-3', name: 'Three' },
-      { id: 'id-4', name: 'Four' },
-      { id: 'id-5', name: 'Five' }],
-    ['id-5', 'id-4', 'id-2', 'id-3', 'id-1'],
-    'id'
-  ))
-  res.end('<h1>Hello World!</h1><hr>')
-})
 
-app.listen(port, hostname, () => {
-  // eslint-disable-next-line no-console
-  console.log(`Hello Trung Quan Dev, I am running at ${ hostname }:${ port }/`)
-})
+  app.get('/', async (req, res) => {
+    res.end('<h1>Hello World!</h1><hr>')
+  })
+
+  app.listen(env.APP_PORT, env.APP_HOST, () => {
+    console.log(`Hello Luong Tran Dev, I am running at ${ env.APP_HOST }:${ env.APP_PORT }/`)
+  })
+
+  //thực hiện cleanup trước khi dừng server lại
+  exitHook(() => {
+    console.log('exiting...')
+    CLOSE_DB()
+    console.log('exited')
+  })
+}
+(async() => {
+  try {
+    console.log('Connecting to MongoBd Atlas!')
+    await CONNECT_BD()
+    console.log('Connected to MongoBd Atlas!')
+    START_SERVER()
+  } catch (error) {
+    console.log(error)
+    process.exit(0)
+  }
+})()
+
+// khi kết nối thành công > start server backend lên
+// CONNECT_BD()
+//   .then(() => console.log('Connected to MongoBd Atlas!'))
+//   .then(() => START_SERVER())
+//   .catch((err) => {
+//     console.log(err)
+//     process.exit(0)
+//   })
