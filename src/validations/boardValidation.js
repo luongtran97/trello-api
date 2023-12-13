@@ -7,12 +7,10 @@ const createNew = async(req, res, next ) => {
     description:Joi.string().required().min(3).max(255).trim().strict()
   })
   try {
-    console.log(req.body)
     // abortEarly : false trường hợp có nhiều lỗi validation thì trả về tất cả
     await correctCondition.validateAsync(req.body, { abortEarly:false })
-    // next()
-    res.status(StatusCodes.CREATED).json({ message:'Note: Post from validations ' })
-
+    //Validate dữ liệu xong, hợp lệ thì cho request đi tiếp sang Controller
+    next()
   } catch (error) {
     res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({ errors: new Error(error).message })
   }
