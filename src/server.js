@@ -23,19 +23,14 @@ const START_SERVER = () => {
 
   //thực hiện cleanup trước khi dừng server lại
   exitHook(() => {
-    console.log('exiting...')
     CLOSE_DB()
-    console.log('exited')
   })
 }
 (async() => {
   try {
-    console.log('Connecting to MongoBd Atlas!')
     await CONNECT_BD()
-    console.log('Connected to MongoBd Atlas!')
     START_SERVER()
   } catch (error) {
-    console.log(error)
     process.exit(0)
   }
 })()
