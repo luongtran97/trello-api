@@ -21,7 +21,6 @@ const validateBeforeCreate = async(data) => {
 const createNew = async(data) => {
   try {
     const validData = await validateBeforeCreate(data)
-    console.log('🚀 ~ validData:', validData)
     const createdBoard = await GET_DB().collection(BOARD_COLLECTION_NAME).insertOne(validData)
     return createdBoard
   } catch (error) {
@@ -36,9 +35,19 @@ const findOneById = async(id) => {
     throw new Error(error)
   }
 }
+// query (aggregate) để lấy toàn bộ column và card thuộc về board
+const getDetails = async(boardId) => {
+  try {
+    const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOne({ _id: new ObjectId(boardId) })
+    return result
+  } catch (error) {
+    throw new Error(error)
+  }
+}
 export const boardModel = {
   BOARD_COLLECTION_NAME,
   BOARD_COLLECTION_SCHEMA,
   createNew,
-  findOneById
+  findOneById,
+  getDetails
 }

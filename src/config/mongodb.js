@@ -31,7 +31,6 @@ export const CONNECT_BD = async() => {
 //đóng kết nối tới database khi cần
 export const CLOSE_DB = async() => {
   // eslint-disable-next-line no-console
-  console.log('disconect vao day!')
   await mongoClientInstance.close()
 }
 
