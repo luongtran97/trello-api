@@ -2,13 +2,16 @@ import Joi from 'joi'
 import { ObjectId } from 'mongodb'
 import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validator'
 import { GET_DB } from '~/config/mongodb'
+import { BOARD_TYPES } from '~/utils/constants'
+import { columnModel } from '~/models/columnModel'
+import { cardModel } from '~/models/cardModel'
 // define collection (name & schema)
 const BOARD_COLLECTION_NAME = 'boards'
 const BOARD_COLLECTION_SCHEMA = Joi.object({
   title:Joi.string().required().min(3).max(50).trim().strict(),
   slug:Joi.string().required().min(3).trim().strict(),
   description:Joi.string().required().min(3).max(255).trim().strict(),
-
+  type:Joi.string().valid(BOARD_TYPES.PUBLIC, BOARD_TYPES.PRIVATE).required(),
   // lưu ý các items trong mảng columnorderids là objectid nên cần thêm pattern cho chuẩn cấu trúc
   columnOrderIds: Joi.array().items(Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)).default([]),
   createdAt: Joi.date().timestamp('javascript').default(Date.now),
@@ -35,11 +38,31 @@ const findOneById = async(id) => {
     throw new Error(error)
   }
 }
-// query (aggregate) để lấy toàn bộ column và card thuộc về board
+// query (aggregate query tổng hợp) để lấy toàn bộ column và card thuộc về board
 const getDetails = async(boardId) => {
   try {
-    const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOne({ _id: new ObjectId(boardId) })
-    return result
+    // const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOne({ _id: new ObjectId(boardId) })
+    const result = await GET_DB().collection(BOARD_COLLECTION_NAME).aggregate([
+      { $match: {
+        _id: new ObjectId(boardId),
+        _destroy: false
+      } },
+      { $lookup:{
+        from:columnModel.COLUMN_COLLECTION_NAME,
+        localField: '_id',
+        foreignField: 'boardId',
+        as: 'columns'
+      } },
+      {
+        $lookup:{
+          from:cardModel.CARD_COLLECTION_NAME,
+          localField:'_id',
+          foreignField:'boardId',
+          as:'cards'
+        }
+      }
+    ]).toArray()
+    return result[0] || {}
   } catch (error) {
     throw new Error(error)
   }
