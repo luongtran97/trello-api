@@ -2,6 +2,7 @@ import { slugify } from '~/utils/formatters'
 import { boardModel } from '~/models/boardModel'
 import ApiError from '~/utils/ApiError'
 import { StatusCodes } from 'http-status-codes'
+import { cloneDeep } from 'lodash'
 const createNew = async(reqBody) => {
   // eslint-disable-next-line no-useless-catch
   try {
@@ -27,14 +28,24 @@ const createNew = async(reqBody) => {
 }
 
 const getDetails = async(boardId) => {
-  console.log('🚀 ~ boardId:', boardId)
   // eslint-disable-next-line no-useless-catch
   try {
     const board = await boardModel.getDetails(boardId)
     if (!board) {
       throw new ApiError(StatusCodes.NOT_FOUND, 'Board not found!')
     }
-    return board
+    // hàm clone deep tạo clone ra 1 mảng mới khi xử lý không ảnh hưởng đến mảng ban đầu
+    const resBoard = cloneDeep(board)
+    // đưa card về đúng colum
+    resBoard.columns.forEach((column) => {
+      // cách dùng .equals nằm trong mongodb có sẵn nó hiểu được Object id mà không cần convert
+      column.cards = resBoard.cards.filter(card => card.columnId.equals(column._id))
+
+      // sử dụng hàm toString() của js để convert ObjectId về string để so sánh
+      // column.cards = resBoard.cards.filter((card) => card.columnId.toString() === column._id.toString())
+    })
+    delete resBoard.cards
+    return resBoard
   } catch (error) {
     throw error
   }
