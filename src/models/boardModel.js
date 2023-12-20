@@ -67,10 +67,29 @@ const getDetails = async(boardId) => {
     throw new Error(error)
   }
 }
+// hàm push 1 giá trị columnId vào cuối mảng columnOrderIds
+const pushColumnOrderIds = async(column) => {
+  try {
+    const existingBoard = await GET_DB().collection(BOARD_COLLECTION_NAME).findOne({ _id: new ObjectId(column._id) })
+    if (!existingBoard) {
+      const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
+        { _id:column.boardId },
+        { $push: { columnOrderIds: new ObjectId(column._id) } },
+        { returnDocument: 'after' }
+      )
+      return result.value
+    } else {
+      return `This column has id ${column._id} already pushed into columnOrderIds`
+    }
+  } catch (error) {
+    throw new Error(error)
+  }
+}
 export const boardModel = {
   BOARD_COLLECTION_NAME,
   BOARD_COLLECTION_SCHEMA,
   createNew,
   findOneById,
-  getDetails
+  getDetails,
+  pushColumnOrderIds
 }
