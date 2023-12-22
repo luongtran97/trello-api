@@ -46,7 +46,7 @@ const pushCardOrderIds = async(card) => {
         { $push: { cardOrderIds: new ObjectId(card._id) } },
         { returnDocument: 'after' }
       )
-      return result.value || null
+      return result || null
     } else {
       return `This column has id ${card._id} already pushed into columnOrderIds`
     }
