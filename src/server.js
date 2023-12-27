@@ -21,7 +21,7 @@ const START_SERVER = () => {
   // môi trường Production support render.com
   if (env.BUILD_MODE === 'production') {
     app.listen(process.env.PORT, () => {
-      console.log(`Hello I am running production at ${ process.env.POR }/`)
+      console.log(`Hello I am running production at ${ process.env.PORT }`)
     })
   } else {
     app.listen(env.LOCAL_DEV_APP_PORT, env.LOCAL_DEV_APP_HOST, () => {
