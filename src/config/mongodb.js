@@ -1,8 +1,4 @@
-/**
- * Updated by trungquandev.com's author on August 17 2023
- * YouTube: https://youtube.com/@trungquandev
- * "A bit of fragrance clings to the hand that gives flowers!"
- */
+
 // mongodb+srv://luongluong99783:<password>@cluster0.nl4mplx.mongodb.net/?retryWrites=true&w=majority
 import { MongoClient, ServerApiVersion } from 'mongodb'
 import { env } from './environment'
