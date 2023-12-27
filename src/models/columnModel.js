@@ -39,6 +39,7 @@ const findOneById = async(id) => {
   }
 }
 // hàm push 1 giá trị cardId vào cuối mảng cardOrderIds
+// dùng $push đẩy một phần tử vào cuối mảng
 const pushCardOrderIds = async(card) => {
   try {
     const existingColumn = await GET_DB().collection(COLUMN_COLLECTION_NAME).findOne({ _id: new ObjectId(card._id) })
@@ -56,6 +57,7 @@ const pushCardOrderIds = async(card) => {
     throw new Error(error)
   }
 }
+
 const update = async(columnId, updateData) => {
   try {
     // lọc những field không cho phép cập nhật linh tinh
@@ -93,5 +95,5 @@ export const columnModel = {
   findOneById,
   pushCardOrderIds,
   update,
-  deleteColumn
+  deleteColumn,
 }

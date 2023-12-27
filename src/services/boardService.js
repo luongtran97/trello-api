@@ -5,7 +5,6 @@ import { StatusCodes } from 'http-status-codes'
 import { cloneDeep } from 'lodash'
 import { columnModel } from '~/models/columnModel'
 import { cardModel } from '~/models/cardModel'
-import { ObjectId } from 'mongodb'
 
 const createNew = async(reqBody) => {
   // eslint-disable-next-line no-useless-catch
