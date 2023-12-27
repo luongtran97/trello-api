@@ -18,10 +18,16 @@ const START_SERVER = () => {
 
   //middleware xử lý lỗi tập trung
   app.use(errorHandlingMiddleware)
-
-  app.listen(env.APP_PORT, env.APP_HOST, () => {
-    console.log(`Hello Luong Tran Dev, I am running at ${ env.APP_HOST }:${ env.APP_PORT }/`)
-  })
+  // môi trường Production support render.com
+  if (env.BUILD_MODE === 'production') {
+    app.listen(process.env.PORT, () => {
+      console.log(`Hello I am running production at ${ process.env.POR }/`)
+    })
+  } else {
+    app.listen(env.LOCAL_DEV_APP_PORT, env.LOCAL_DEV_APP_HOST, () => {
+      console.log(`Hello Luong Tran Dev, I am running at ${ env.LOCAL_DEV_APP_HOST }:${ env.LOCAL_DEV_APP_PORT }/`)
+    })
+  }
 
   //thực hiện cleanup trước khi dừng server lại
   exitHook(() => {
